@@ -33,19 +33,34 @@ function renderProducts(products) {
   productsList.innerHTML = products.map(product => `
     <article class="product-card">
       <div class="product-card__content">
-        <h3 class="product-card__name">${product.name}</h3>
+        <h3 class="product-card__name">${escapeHtml(product.name)}</h3>
         <p class="product-card__price">${product.price.toFixed(2)} ₽</p>
       </div>
       <div class="product-card__actions">
-        <button onclick="editProduct(${product.id})" class="btn btn--edit">
+        <button 
+          onclick="editProduct(${product.id})" 
+          class="btn btn--edit"
+          aria-label="Изменить товар ${escapeHtml(product.name)}"
+        >
           Изменить
         </button>
-        <button onclick="deleteProduct(${product.id})" class="btn btn--delete">
+        <button 
+          onclick="deleteProduct(${product.id})" 
+          class="btn btn--delete"
+          aria-label="Удалить товар ${escapeHtml(product.name)}"
+        >
           Удалить
         </button>
       </div>
     </article>
   `).join('');
+}
+
+// Функция экранирования HTML для безопасности
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Создание или обновление товара
@@ -121,7 +136,7 @@ async function deleteProduct(id) {
   }
 }
 
-// Сброс формы добавления товара
+// Сброс формы
 cancelBtn.addEventListener('click', resetForm);
 
 function resetForm() {
