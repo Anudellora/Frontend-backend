@@ -1,0 +1,25 @@
+.home-page {
+    min-height: calc(100vh - 60px);
+    padding: 40px 20px;
+    background-color: #f2f3f7;
+  }
+  
+  .home-page__title {
+    text-align: center;
+    margin-bottom: 32px;
+    color: #222222;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  
+  .home-page__status {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 40px;
+  }
+  
+  .home-page__status--error {
+    color: #e74c3c;
+  }
+  
