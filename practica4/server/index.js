@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 // Используем порт 5001, чтобы избежать конфликта с AirPlay на macOS
@@ -7,6 +9,82 @@ const PORT = 5001;
 
 app.use(cors());
 app.use(express.json());
+
+// ─── Swagger Configuration ───────────────────────────────────────────────────
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'ZVC Store API',
+    version: '1.0.0',
+    description: 'API документация для интернет-магазина ZVC',
+  },
+  servers: [
+    {
+      url: `http://localhost:${PORT}`,
+      description: 'Локальный сервер',
+    },
+  ],
+};
+
+const swaggerOptions = {
+  swaggerDefinition,
+  apis: ['./index.js'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// ─── Swagger Schema ──────────────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - name
+ *         - category
+ *         - description
+ *         - price
+ *         - stock
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: Уникальный идентификатор продукта
+ *           example: 1
+ *         name:
+ *           type: string
+ *           description: Название продукта
+ *           example: Плюшевая игрушка Jane Doe
+ *         category:
+ *           type: string
+ *           description: Категория продукта
+ *           example: Игрушки
+ *         description:
+ *           type: string
+ *           description: Описание продукта
+ *           example: Плюшевая игрушка Jane Doe из игры Zenless Zone Zero.
+ *         price:
+ *           type: number
+ *           description: Цена продукта
+ *           example: 1990
+ *         stock:
+ *           type: integer
+ *           description: Количество на складе
+ *           example: 25
+ *         image:
+ *           type: string
+ *           description: Путь к изображению
+ *           example: ./img/janedoeplush.png
+ *         rating:
+ *           type: number
+ *           description: Рейтинг продукта
+ *           example: 4.8
+ */
+
+// ─── Data ────────────────────────────────────────────────────────────────────
 
 let products = [
   {
@@ -121,14 +199,52 @@ let products = [
   },
 ];
 
-let nextId = 3;
+let nextId = 11;
 
-// GET — все товары
+// ─── Routes ──────────────────────────────────────────────────────────────────
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Получить все продукты
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Массив всех продуктов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
 
-// POST — добавить товар
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Добавить новый продукт
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Product'
+ *     responses:
+ *       201:
+ *         description: Продукт успешно создан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Не заполнены обязательные поля
+ */
 app.post('/api/products', (req, res) => {
   const { name, category, description, price, stock, image, rating } = req.body;
 
@@ -151,6 +267,125 @@ app.post('/api/products', (req, res) => {
   res.status(201).json(newProduct);
 });
 
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Получить продукт по ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID продукта
+ *     responses:
+ *       200:
+ *         description: Данные продукта
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Продукт не найден
+ */
+app.get('/api/products/:id', (req, res) => {
+  const product = products.find((p) => p.id === Number(req.params.id));
+  if (!product) {
+    return res.status(404).json({ error: 'Продукт не найден' });
+  }
+  res.json(product);
+});
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   patch:
+ *     summary: Обновить продукт по ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID продукта
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Product'
+ *     responses:
+ *       200:
+ *         description: Продукт успешно обновлён
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Продукт не найден
+ */
+app.patch('/api/products/:id', (req, res) => {
+  const index = products.findIndex((p) => p.id === Number(req.params.id));
+  if (index === -1) {
+    return res.status(404).json({ error: 'Продукт не найден' });
+  }
+
+  const { name, category, description, price, stock, image, rating } = req.body;
+
+  if (name !== undefined) products[index].name = name;
+  if (category !== undefined) products[index].category = category;
+  if (description !== undefined) products[index].description = description;
+  if (price !== undefined) products[index].price = Number(price);
+  if (stock !== undefined) products[index].stock = Number(stock);
+  if (image !== undefined) products[index].image = image;
+  if (rating !== undefined) products[index].rating = Number(rating);
+
+  res.json(products[index]);
+});
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Удалить продукт по ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID продукта
+ *     responses:
+ *       200:
+ *         description: Продукт успешно удалён
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Продукт удалён
+ *       404:
+ *         description: Продукт не найден
+ */
+app.delete('/api/products/:id', (req, res) => {
+  const index = products.findIndex((p) => p.id === Number(req.params.id));
+  if (index === -1) {
+    return res.status(404).json({ error: 'Продукт не найден' });
+  }
+
+  products.splice(index, 1);
+  res.json({ message: 'Продукт удалён' });
+});
+
+// ─── Start Server ────────────────────────────────────────────────────────────
+
 app.listen(PORT, () => {
   console.log(`ZVC Server запущен: http://localhost:${PORT}`);
+  console.log(`Swagger документация: http://localhost:${PORT}/api-docs`);
 });
