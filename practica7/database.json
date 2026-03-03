@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "demo@test.com",
+      "first_name": "Demo",
+      "last_name": "User",
+      "password": "$2a$10$zbzaCpXy08CkCM2rXCiGC.rCQJvrLSpmffHfW3LgDrgWKgxFRV606"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "title": "Ноутбук ASUS VivoBook",
+      "category": "Электроника",
+      "description": "Мощный ноутбук для работы и учёбы, 16 ГБ ОЗУ, SSD 512 ГБ",
+      "price": 54990
+    },
+    {
+      "id": 2,
+      "title": "Смартфон Samsung Galaxy",
+      "category": "Электроника",
+      "description": "Флагманский смартфон с камерой 108 МП и AMOLED экраном",
+      "price": 39990
+    },
+    {
+      "id": 3,
+      "title": "Кроссовки Nike Air Max",
+      "category": "Одежда",
+      "description": "Стильные кроссовки для повседневной носки, размеры 40-45",
+      "price": 8990
+    }
+  ],
+  "nextUserId": 2,
+  "nextProductId": 4
+}
