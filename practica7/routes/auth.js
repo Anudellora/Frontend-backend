@@ -27,8 +27,9 @@ router.post('/register', (req, res) => {
             return res.status(409).json({ message: 'Пользователь с таким email уже существует' });
         }
 
-        // Хеширование пароля
-        const hashedPassword = bcrypt.hashSync(password, 10);
+        // Генерация соли и хеширование пароля
+        const salt = bcrypt.genSaltSync(10); // Явная генерация соли (cost factor = 10)
+        const hashedPassword = bcrypt.hashSync(password, salt); // Хешируем пароль с полученной солью
 
         // Создание пользователя
         const newUser = {

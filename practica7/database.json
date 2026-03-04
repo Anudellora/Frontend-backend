@@ -6,6 +6,20 @@
       "first_name": "Demo",
       "last_name": "User",
       "password": "$2a$10$zbzaCpXy08CkCM2rXCiGC.rCQJvrLSpmffHfW3LgDrgWKgxFRV606"
+    },
+    {
+      "id": 2,
+      "email": "new@test.com",
+      "first_name": "Ivan",
+      "last_name": "Petrov",
+      "password": "$2a$10$ySuDZnPrjWXUYxDY8jxxnOPdxb/hE3qIAmuaG7AGzIg8tx8Z2VZQ."
+    },
+    {
+      "id": 3,
+      "email": "kekolov10@mail.ru",
+      "first_name": "Anton",
+      "last_name": "Savelyev",
+      "password": "$2a$10$OGyDO6v1LiS5ADnwZWNoc.XheIAS6wrU7EtzRgpwGExbAjX.7hAre"
     }
   ],
   "products": [
@@ -29,8 +43,15 @@
       "category": "Одежда",
       "description": "Стильные кроссовки для повседневной носки, размеры 40-45",
       "price": 8990
+    },
+    {
+      "id": 4,
+      "title": "Новый товар",
+      "category": "Техника",
+      "description": "Описание товара",
+      "price": 9999
     }
   ],
-  "nextUserId": 2,
-  "nextProductId": 4
+  "nextUserId": 4,
+  "nextProductId": 5
 }

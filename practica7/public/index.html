@@ -78,52 +78,8 @@
   <!-- ===== Dashboard ===== -->
   <div id="dashboardSection" class="container hidden">
 
-    <!-- Dashboard Tabs -->
-    <div class="dash-tabs">
-      <button class="dash-tab active" id="tabProducts" onclick="switchDashTab('products')">📦 Товары</button>
-      <button class="dash-tab" id="tabTester" onclick="switchDashTab('tester')">🧪 API Тестер</button>
-    </div>
-
-    <!-- ===== Products Panel ===== -->
-    <div class="dashboard" id="panelProducts">
-
-      <!-- Create Product -->
-      <div class="create-card">
-        <h3>➕ Добавить товар</h3>
-        <form id="createProductForm" class="create-form">
-          <div class="form-group">
-            <label for="prodTitle">Название</label>
-            <input type="text" id="prodTitle" placeholder="Ноутбук" required>
-          </div>
-          <div class="form-group">
-            <label for="prodCategory">Категория</label>
-            <input type="text" id="prodCategory" placeholder="Электроника" required>
-          </div>
-          <div class="form-group full-width">
-            <label for="prodDescription">Описание</label>
-            <textarea id="prodDescription" placeholder="Описание товара..."></textarea>
-          </div>
-          <div class="form-group">
-            <label for="prodPrice">Цена (₽)</label>
-            <input type="number" id="prodPrice" placeholder="59999" step="0.01" min="0" required>
-          </div>
-          <div class="form-group" style="display:flex;align-items:flex-end;">
-            <button type="submit" class="btn btn-success btn-sm">Создать</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Products List -->
-      <div class="section-header">
-        <h2>📦 Товары</h2>
-        <button class="btn btn-sm btn-primary" id="btnRefresh">Обновить</button>
-      </div>
-      <div id="productsList" class="products-grid"></div>
-
-    </div>
-
     <!-- ===== API Tester Panel ===== -->
-    <div id="panelTester" class="hidden">
+    <div id="panelTester">
       <div class="tester-layout">
 
         <!-- Endpoints sidebar -->
@@ -226,35 +182,7 @@
 
   </div>
 
-  <!-- ===== Edit Modal ===== -->
-  <div id="editModal" class="modal-overlay hidden">
-    <div class="modal">
-      <h3>✏️ Редактировать товар</h3>
-      <form id="editProductForm">
-        <input type="hidden" id="editId">
-        <div class="form-group">
-          <label for="editTitle">Название</label>
-          <input type="text" id="editTitle" required>
-        </div>
-        <div class="form-group">
-          <label for="editCategory">Категория</label>
-          <input type="text" id="editCategory" required>
-        </div>
-        <div class="form-group">
-          <label for="editDescription">Описание</label>
-          <textarea id="editDescription"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="editPrice">Цена (₽)</label>
-          <input type="number" id="editPrice" step="0.01" min="0" required>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-cancel" id="btnCancelEdit">Отмена</button>
-          <button type="submit" class="btn btn-primary">Сохранить</button>
-        </div>
-      </form>
-    </div>
-  </div>
+
 
   <!-- ===== Toast container ===== -->
   <div id="toastContainer"></div>
@@ -273,10 +201,6 @@
     const $registerForm = document.getElementById('registerForm');
     const $tabLogin = document.getElementById('tabLogin');
     const $tabRegister = document.getElementById('tabRegister');
-    const $createForm = document.getElementById('createProductForm');
-    const $productsList = document.getElementById('productsList');
-    const $editModal = document.getElementById('editModal');
-    const $editForm = document.getElementById('editProductForm');
 
     // ── Auth Tabs ──
     $tabLogin.addEventListener('click', () => switchTab('login'));
@@ -289,13 +213,7 @@
       $registerForm.classList.toggle('hidden', tab !== 'register');
     }
 
-    // ── Dashboard Tabs ──
-    function switchDashTab(tab) {
-      document.getElementById('tabProducts').classList.toggle('active', tab === 'products');
-      document.getElementById('tabTester').classList.toggle('active', tab === 'tester');
-      document.getElementById('panelProducts').classList.toggle('hidden', tab !== 'products');
-      document.getElementById('panelTester').classList.toggle('hidden', tab !== 'tester');
-    }
+
 
     // ── Toast ──
     function toast(msg, type = 'success') {
@@ -384,130 +302,9 @@
       $dashboard.classList.remove('hidden');
       $userInfo.classList.remove('hidden');
       $userEmail.textContent = currentUser.email;
-      loadProducts();
     }
 
-    // ── Products ──
-    async function loadProducts() {
-      try {
-        const products = await api('/api/products');
-        renderProducts(products);
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    }
 
-    function renderProducts(products) {
-      if (!products.length) {
-        $productsList.innerHTML = `
-          <div class="empty-state" style="grid-column:1/-1">
-            <div class="icon">📦</div>
-            <p>Товаров пока нет. Добавьте первый!</p>
-          </div>`;
-        return;
-      }
-      $productsList.innerHTML = products.map(p => `
-        <div class="product-card">
-          <div class="card-top">
-            <div class="title">${esc(p.title)}</div>
-            <span class="id-badge">#${p.id}</span>
-          </div>
-          <span class="category">${esc(p.category)}</span>
-          <div class="description">${esc(p.description) || '—'}</div>
-          <div class="price">${Number(p.price).toLocaleString('ru-RU')} ₽</div>
-          <div class="actions">
-            <button class="btn btn-sm btn-edit" onclick="openEdit(${p.id})">Изменить</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">Удалить</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function esc(str) {
-      const d = document.createElement('div');
-      d.textContent = str || '';
-      return d.innerHTML;
-    }
-
-    // Create
-    $createForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        await api('/api/products', {
-          method: 'POST',
-          body: JSON.stringify({
-            title: document.getElementById('prodTitle').value,
-            category: document.getElementById('prodCategory').value,
-            description: document.getElementById('prodDescription').value,
-            price: Number(document.getElementById('prodPrice').value)
-          })
-        });
-        toast('Товар создан!');
-        $createForm.reset();
-        loadProducts();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    });
-
-    // Delete
-    async function deleteProduct(id) {
-      if (!confirm('Удалить этот товар?')) return;
-      try {
-        await api(`/api/products/${id}`, { method: 'DELETE' });
-        toast('Товар удалён');
-        loadProducts();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    }
-
-    // Edit
-    async function openEdit(id) {
-      try {
-        const p = await api(`/api/products/${id}`);
-        document.getElementById('editId').value = p.id;
-        document.getElementById('editTitle').value = p.title;
-        document.getElementById('editCategory').value = p.category;
-        document.getElementById('editDescription').value = p.description;
-        document.getElementById('editPrice').value = p.price;
-        $editModal.classList.remove('hidden');
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    }
-
-    document.getElementById('btnCancelEdit').addEventListener('click', () => {
-      $editModal.classList.add('hidden');
-    });
-
-    $editModal.addEventListener('click', (e) => {
-      if (e.target === $editModal) $editModal.classList.add('hidden');
-    });
-
-    $editForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      try {
-        await api(`/api/products/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            title: document.getElementById('editTitle').value,
-            category: document.getElementById('editCategory').value,
-            description: document.getElementById('editDescription').value,
-            price: Number(document.getElementById('editPrice').value)
-          })
-        });
-        toast('Товар обновлён!');
-        $editModal.classList.add('hidden');
-        loadProducts();
-      } catch (err) {
-        toast(err.message, 'error');
-      }
-    });
-
-    // Refresh
-    document.getElementById('btnRefresh').addEventListener('click', loadProducts);
 
     // ═══════════════════════════════════════
     //  API TESTER
