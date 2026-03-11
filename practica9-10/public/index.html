@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Practica 7 — REST API Dashboard">
+  <title>Practica 9-10 — Refresh Tokens</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">⬡ Practica9-10 <span>Refresh Tokens</span></div>
+      <div class="user-info hidden" id="userInfo">
+        <div class="user-badge">
+          <span class="dot"></span>
+          <span id="userEmail"></span>
+        </div>
+        <button class="btn-logout" id="btnLogout">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Auth Section ===== -->
+  <div id="authSection" class="auth-container">
+    <div class="auth-card">
+      <h2>Добро пожаловать</h2>
+      <p>Войдите или зарегистрируйтесь для управления товарами</p>
+      <div class="hint-box">
+        <strong>Демо-аккаунт:</strong> demo@test.com / demo1234
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login" id="tabLogin">Вход</button>
+        <button class="tab-btn" data-tab="register" id="tabRegister">Регистрация</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="user@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Пароль</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" placeholder="user@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="regFirstName">Имя</label>
+          <input type="text" id="regFirstName" placeholder="Иван" required>
+        </div>
+        <div class="form-group">
+          <label for="regLastName">Фамилия</label>
+          <input type="text" id="regLastName" placeholder="Петров" required>
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Пароль</label>
+          <input type="password" id="regPassword" placeholder="Минимум 4 символа" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Dashboard ===== -->
+  <div id="dashboardSection" class="container hidden">
+
+    <!-- ===== API Tester Panel ===== -->
+    <div id="panelTester">
+      <div class="tester-layout">
+
+        <!-- Endpoints sidebar -->
+        <div class="tester-sidebar">
+          <h3>Маршруты</h3>
+          <div class="endpoint-list" id="endpointList">
+            <!-- Auth -->
+            <div class="endpoint-group-title">Авторизация</div>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="POST"
+              data-path="/api/auth/register"
+              data-body='{"email":"new@test.com","first_name":"Ivan","last_name":"Petrov","password":"pass1234"}'>
+              <span class="method-tag post">POST</span> /api/auth/register
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="POST" data-path="/api/auth/login"
+              data-body='{"email":"demo@test.com","password":"demo1234"}'>
+              <span class="method-tag post">POST</span> /api/auth/login
+            </button>
+            <button class="endpoint-item refresh-btn" onclick="selectRefreshEndpoint(this)" data-method="POST"
+              data-path="/api/auth/refresh" data-body=''>
+              <span class="method-tag post">POST</span> /api/auth/refresh
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="GET" data-path="/api/auth/me"
+              data-body=''>
+              <span class="method-tag get">GET</span> /api/auth/me
+            </button>
+            <!-- Products -->
+            <div class="endpoint-group-title">Товары</div>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="POST" data-path="/api/products"
+              data-body='{"title":"Новый товар","category":"Техника","description":"Описание товара","price":9999}'>
+              <span class="method-tag post">POST</span> /api/products
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="GET" data-path="/api/products"
+              data-body="">
+              <span class="method-tag get">GET</span> /api/products
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="GET" data-path="/api/products/1"
+              data-body="">
+              <span class="method-tag get">GET</span> /api/products/:id
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="PUT" data-path="/api/products/1"
+              data-body='{"title":"Обновлённый товар","price":7777}'>
+              <span class="method-tag put">PUT</span> /api/products/:id
+            </button>
+            <button class="endpoint-item" onclick="selectEndpoint(this)" data-method="DELETE"
+              data-path="/api/products/1" data-body="">
+              <span class="method-tag delete">DELETE</span> /api/products/:id
+            </button>
+          </div>
+        </div>
+
+        <!-- Request / Response area -->
+        <div class="tester-main">
+
+          <!-- Request -->
+          <div class="tester-card">
+            <div class="tester-card-header">
+              <h3>Запрос</h3>
+            </div>
+            <div class="request-bar">
+              <select id="testerMethod">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+              <input type="text" id="testerUrl" placeholder="/api/products" value="/api/products">
+              <button class="btn btn-primary btn-sm" id="btnExecute" onclick="executeRequest()">Выполнить</button>
+            </div>
+            <div class="form-group" style="margin-top:1rem">
+              <label>Request Body (JSON)</label>
+              <textarea id="testerBody" rows="6" placeholder='{"key": "value"}'></textarea>
+            </div>
+            <div class="tester-info">
+              <span class="info-tag">🔑 Authorization: Bearer токен подставляется автоматически</span>
+              <span class="info-tag" id="refreshTokenInfo" style="display:none">🔄 x-refresh-token: refresh-токен
+                подставляется автоматически</span>
+            </div>
+          </div>
+
+          <!-- Response -->
+          <div class="tester-card" id="responseCard">
+            <div class="tester-card-header">
+              <h3>Ответ</h3>
+              <div id="responseStatus"></div>
+            </div>
+
+            <!-- Curl -->
+            <div class="response-section">
+              <div class="response-label">Curl</div>
+              <pre class="code-block" id="curlBlock"></pre>
+            </div>
+
+            <!-- URL -->
+            <div class="response-section">
+              <div class="response-label">Request URL</div>
+              <div class="url-display" id="requestUrlDisplay"></div>
+            </div>
+
+            <!-- Response body -->
+            <div class="response-section">
+              <div class="response-label">Server response</div>
+              <div class="response-meta" id="responseMeta"></div>
+              <pre class="code-block" id="responseBody">Нажмите "Выполнить" для отправки запроса</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <!-- ===== Toast container ===== -->
+  <div id="toastContainer"></div>
+
+  <script>
+    const API = '';
+    let token = localStorage.getItem('accessToken');
+    let refreshToken = localStorage.getItem('refreshToken');
+    let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    let isRefreshEndpoint = false;
+
+    // ── Elements ──
+    const $authSection = document.getElementById('authSection');
+    const $dashboard = document.getElementById('dashboardSection');
+    const $userInfo = document.getElementById('userInfo');
+    const $userEmail = document.getElementById('userEmail');
+    const $loginForm = document.getElementById('loginForm');
+    const $registerForm = document.getElementById('registerForm');
+    const $tabLogin = document.getElementById('tabLogin');
+    const $tabRegister = document.getElementById('tabRegister');
+
+    // ── Auth Tabs ──
+    $tabLogin.addEventListener('click', () => switchTab('login'));
+    $tabRegister.addEventListener('click', () => switchTab('register'));
+
+    function switchTab(tab) {
+      $tabLogin.classList.toggle('active', tab === 'login');
+      $tabRegister.classList.toggle('active', tab === 'register');
+      $loginForm.classList.toggle('hidden', tab !== 'login');
+      $registerForm.classList.toggle('hidden', tab !== 'register');
+    }
+
+
+
+    // ── Toast ──
+    function toast(msg, type = 'success') {
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.textContent = msg;
+      document.getElementById('toastContainer').appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // ── Auth helpers ──
+    function headers(json = true) {
+      const h = {};
+      if (json) h['Content-Type'] = 'application/json';
+      if (token) h['Authorization'] = `Bearer ${token}`;
+      return h;
+    }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(API + path, { headers: headers(), ...opts });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Ошибка');
+      return data;
+    }
+
+    // ── Auth flows ──
+    $registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await api('/api/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: document.getElementById('regEmail').value,
+            first_name: document.getElementById('regFirstName').value,
+            last_name: document.getElementById('regLastName').value,
+            password: document.getElementById('regPassword').value
+          })
+        });
+        toast('Регистрация прошла успешно! Войдите.');
+        switchTab('login');
+        $registerForm.reset();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    $loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const data = await api('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+          })
+        });
+        token = data.accessToken;
+        refreshToken = data.refreshToken;
+        currentUser = data.user;
+        localStorage.setItem('accessToken', token);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        showDashboard();
+        toast(`Добро пожаловать, ${currentUser.first_name}!`);
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      token = null;
+      refreshToken = null;
+      currentUser = null;
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      showAuth();
+      toast('Вы вышли из системы');
+    });
+
+    // ── View switching ──
+    function showAuth() {
+      $authSection.classList.remove('hidden');
+      $dashboard.classList.add('hidden');
+      $userInfo.classList.add('hidden');
+    }
+
+    function showDashboard() {
+      $authSection.classList.add('hidden');
+      $dashboard.classList.remove('hidden');
+      $userInfo.classList.remove('hidden');
+      $userEmail.textContent = currentUser.email;
+    }
+
+
+
+    // ═══════════════════════════════════════
+    //  API TESTER
+    // ═══════════════════════════════════════
+
+    function selectEndpoint(btn) {
+      document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+      isRefreshEndpoint = false;
+      document.getElementById('refreshTokenInfo').style.display = 'none';
+
+      const method = btn.dataset.method;
+      const path = btn.dataset.path;
+      const body = btn.dataset.body;
+
+      document.getElementById('testerMethod').value = method;
+      document.getElementById('testerUrl').value = path;
+      document.getElementById('testerBody').value = body ? JSON.stringify(JSON.parse(body), null, 2) : '';
+    }
+
+    function selectRefreshEndpoint(btn) {
+      document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+      isRefreshEndpoint = true;
+      document.getElementById('refreshTokenInfo').style.display = '';
+
+      document.getElementById('testerMethod').value = 'POST';
+      document.getElementById('testerUrl').value = '/api/auth/refresh';
+      document.getElementById('testerBody').value = '';
+    }
+
+    async function executeRequest() {
+      const method = document.getElementById('testerMethod').value;
+      const url = document.getElementById('testerUrl').value;
+      const bodyRaw = document.getElementById('testerBody').value.trim();
+
+      const fullUrl = window.location.origin + url;
+
+      // Build headers
+      const hdrs = { 'Accept': 'application/json' };
+      let curlCmd = `curl -X '${method}' \\\n  '${fullUrl}'`;
+
+      if (isRefreshEndpoint && refreshToken) {
+        // For /refresh — send refresh token in x-refresh-token header
+        hdrs['x-refresh-token'] = refreshToken;
+        curlCmd += ` \\\n  -H 'x-refresh-token: ${refreshToken.substring(0, 20)}...'`;
+      } else if (token) {
+        hdrs['Authorization'] = `Bearer ${token}`;
+        curlCmd += ` \\\n  -H 'Authorization: Bearer ${token.substring(0, 20)}...'`;
+      }
+
+      if (bodyRaw && (method === 'POST' || method === 'PUT')) {
+        hdrs['Content-Type'] = 'application/json';
+        curlCmd += ` \\\n  -H 'Content-Type: application/json'`;
+        curlCmd += ` \\\n  -d '${bodyRaw}'`;
+      }
+
+      document.getElementById('curlBlock').textContent = curlCmd;
+      document.getElementById('requestUrlDisplay').textContent = fullUrl;
+
+      // Execute
+      const fetchOpts = { method, headers: hdrs };
+      if (bodyRaw && (method === 'POST' || method === 'PUT')) {
+        fetchOpts.body = bodyRaw;
+      }
+
+      try {
+        const startTime = performance.now();
+        const res = await fetch(url, fetchOpts);
+        const elapsed = Math.round(performance.now() - startTime);
+        const data = await res.json();
+
+        // If refresh succeeded — update stored tokens automatically
+        if (isRefreshEndpoint && res.ok && data.accessToken) {
+          token = data.accessToken;
+          refreshToken = data.refreshToken;
+          localStorage.setItem('accessToken', token);
+          localStorage.setItem('refreshToken', refreshToken);
+          toast('Токены обновлены! ✅');
+        }
+
+        // Status
+        const statusEl = document.getElementById('responseStatus');
+        const isOk = res.ok;
+        statusEl.innerHTML = `<span class="status-code ${isOk ? 'ok' : 'err'}">${res.status}</span>
+          <span class="status-text">${res.statusText}</span>
+          <span class="status-time">${elapsed} ms</span>`;
+
+        // Meta
+        document.getElementById('responseMeta').innerHTML = `
+          <span class="meta-item"><strong>Code</strong> ${res.status}</span>
+          <span class="meta-item"><strong>Status</strong> ${res.statusText || (isOk ? 'OK' : 'Error')}</span>`;
+
+        // Body
+        document.getElementById('responseBody').textContent = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        document.getElementById('responseStatus').innerHTML = `<span class="status-code err">ERR</span><span class="status-text">${err.message}</span>`;
+        document.getElementById('responseBody').textContent = err.message;
+      }
+    }
+
+    // ── Init ──
+    if (token && currentUser) {
+      showDashboard();
+    } else {
+      showAuth();
+    }
+
+    // Keep backward compat for old localStorage key
+    if (!token) {
+      const oldToken = localStorage.getItem('token');
+      if (oldToken) {
+        token = oldToken;
+        localStorage.setItem('accessToken', oldToken);
+        localStorage.removeItem('token');
+      }
+    }
+  </script>
+
+</body>
+
+</html>
