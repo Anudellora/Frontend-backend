@@ -1,11 +1,12 @@
 const express = require('express');
 const { loadDB, saveDB } = require('../config/database');
 const authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
-// POST /api/products — Создать товар (требуется авторизация)
-router.post('/', authMiddleware, (req, res) => {
+// POST /api/products — Создать товар (Доступ: Продавец и Администратор)
+router.post('/', authMiddleware, roleMiddleware(['seller', 'admin']), (req, res) => {
     try {
         const { title, category, description, price } = req.body;
 
@@ -36,8 +37,8 @@ router.post('/', authMiddleware, (req, res) => {
     }
 });
 
-// GET /api/products — Получить список товаров
-router.get('/', (req, res) => {
+// GET /api/products — Получить список товаров (Доступ: Пользователь и выше)
+router.get('/', authMiddleware, roleMiddleware(['user', 'seller', 'admin']), (req, res) => {
     try {
         const db = loadDB();
         res.json(db.products);
@@ -47,8 +48,8 @@ router.get('/', (req, res) => {
     }
 });
 
-// GET /api/products/:id — Получить товар по id
-router.get('/:id', authMiddleware, (req, res) => {
+// GET /api/products/:id — Получить товар по id (Доступ: Пользователь и выше)
+router.get('/:id', authMiddleware, roleMiddleware(['user', 'seller', 'admin']), (req, res) => {
     try {
         const db = loadDB();
         const product = db.products.find(p => p.id === Number(req.params.id));
@@ -64,8 +65,8 @@ router.get('/:id', authMiddleware, (req, res) => {
     }
 });
 
-// PUT /api/products/:id — Обновить параметры товара (требуется авторизация)
-router.put('/:id', authMiddleware, (req, res) => {
+// PUT /api/products/:id — Обновить параметры товара (Доступ: Продавец и Администратор)
+router.put('/:id', authMiddleware, roleMiddleware(['seller', 'admin']), (req, res) => {
     try {
         const { title, category, description, price } = req.body;
 
@@ -96,8 +97,8 @@ router.put('/:id', authMiddleware, (req, res) => {
     }
 });
 
-// DELETE /api/products/:id — Удалить товар (требуется авторизация)
-router.delete('/:id', authMiddleware, (req, res) => {
+// DELETE /api/products/:id — Удалить товар (Доступ: Администратор)
+router.delete('/:id', authMiddleware, roleMiddleware(['admin']), (req, res) => {
     try {
         const db = loadDB();
         const index = db.products.findIndex(p => p.id === Number(req.params.id));

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useAuth } from '../store/AuthContext';
 
 export default function ProductDetailPage({ addToast }) {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const userRole = user?.role || 'user';
 
     useEffect(() => {
         api.get(`/products/${id}`)
@@ -48,8 +52,14 @@ export default function ProductDetailPage({ addToast }) {
                                 <h1 className="detail-title">{product.title}</h1>
                             </div>
                             <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                                <Link to={`/products/${id}/edit`} className="btn btn-ghost btn-sm">✏️ Изменить</Link>
-                                <button className="btn btn-danger btn-sm" onClick={handleDelete}>🗑 Удалить</button>
+                                {/* Редактировать могут продавцы и админы */}
+                                {(userRole === 'seller' || userRole === 'admin') && (
+                                    <Link to={`/products/${id}/edit`} className="btn btn-ghost btn-sm">✏️ Изменить</Link>
+                                )}
+                                {/* Удалять может ТОЛЬКО администратор */}
+                                {userRole === 'admin' && (
+                                    <button className="btn btn-danger btn-sm" onClick={handleDelete}>🗑 Удалить</button>
+                                )}
                             </div>
                         </div>
 

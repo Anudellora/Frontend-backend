@@ -45,6 +45,50 @@ const ENDPOINTS = [
         ],
     },
     {
+        group: 'Users',
+        items: [
+            {
+                id: 'users-list',
+                method: 'GET',
+                path: '/users',
+                description: 'Получить список пользователей',
+                defaultBody: '',
+                auth: true,
+                useRefresh: false,
+            },
+            {
+                id: 'users-get',
+                method: 'GET',
+                path: '/users/:id',
+                description: 'Получить пользователя по id',
+                defaultBody: '',
+                auth: true,
+                useRefresh: false,
+                pathParam: true,
+            },
+            {
+                id: 'users-update',
+                method: 'PUT',
+                path: '/users/:id',
+                description: 'Обновить информацию пользователя',
+                defaultBody: JSON.stringify({ role: 'seller', blocked: false }, null, 2),
+                auth: true,
+                useRefresh: false,
+                pathParam: true,
+            },
+            {
+                id: 'users-delete',
+                method: 'DELETE',
+                path: '/users/:id',
+                description: 'Заблокировать пользователя',
+                defaultBody: '',
+                auth: true,
+                useRefresh: false,
+                pathParam: true,
+            },
+        ],
+    },
+    {
         group: 'Products',
         items: [
             {
@@ -62,7 +106,7 @@ const ENDPOINTS = [
                 path: '/products',
                 description: 'Получить список товаров',
                 defaultBody: '',
-                auth: false,
+                auth: true,
                 useRefresh: false,
             },
             {

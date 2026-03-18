@@ -13,6 +13,8 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ProductCreatePage from './pages/ProductCreatePage';
 import ProductEditPage from './pages/ProductEditPage';
 import AdminPage from './pages/AdminPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import UsersListPage from './pages/UsersListPage';
 
 function AppRoutes({ addToast }) {
   const { user, loading } = useAuth();
@@ -23,14 +25,22 @@ function AppRoutes({ addToast }) {
 
   return (
     <Routes>
+      {/* Публичные маршруты (Гость) */}
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage addToast={addToast} />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage addToast={addToast} />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      <Route path="/" element={<ProtectedRoute><ProductsPage addToast={addToast} /></ProtectedRoute>} />
-      <Route path="/products/new" element={<ProtectedRoute><ProductCreatePage addToast={addToast} /></ProtectedRoute>} />
-      <Route path="/products/:id" element={<ProtectedRoute><ProductDetailPage addToast={addToast} /></ProtectedRoute>} />
-      <Route path="/products/:id/edit" element={<ProtectedRoute><ProductEditPage addToast={addToast} /></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+      {/* Просмотр товаров — Пользователь, Продавец, Администратор */}
+      <Route path="/" element={<ProtectedRoute allowedRoles={['user', 'seller', 'admin']}><ProductsPage addToast={addToast} /></ProtectedRoute>} />
+      <Route path="/products/:id" element={<ProtectedRoute allowedRoles={['user', 'seller', 'admin']}><ProductDetailPage addToast={addToast} /></ProtectedRoute>} />
+
+      {/* Создание/редактирование товаров — Продавец и Администратор */}
+      <Route path="/products/new" element={<ProtectedRoute allowedRoles={['seller', 'admin']}><ProductCreatePage addToast={addToast} /></ProtectedRoute>} />
+      <Route path="/products/:id/edit" element={<ProtectedRoute allowedRoles={['seller', 'admin']}><ProductEditPage addToast={addToast} /></ProtectedRoute>} />
+
+      {/* Панель администратора — только Администратор */}
+      <Route path="/users" element={<ProtectedRoute allowedRoles={['admin']}><UsersListPage addToast={addToast} /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

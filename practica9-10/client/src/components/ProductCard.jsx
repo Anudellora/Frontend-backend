@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function ProductCard({ product, onDelete, toast }) {
+export default function ProductCard({ product, onDelete, toast, userRole }) {
     const [deleting, setDeleting] = useState(false);
     const navigate = useNavigate();
 
@@ -31,19 +31,27 @@ export default function ProductCard({ product, onDelete, toast }) {
                 <Link to={`/products/${product.id}`} className="btn btn-secondary btn-sm">
                     👁 Просмотр
                 </Link>
-                <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => navigate(`/products/${product.id}/edit`)}
-                >
-                    ✏️ Изменить
-                </button>
-                <button
-                    className="btn btn-danger btn-sm"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                >
-                    🗑 Удалить
-                </button>
+
+                {/* Редактировать могут продавцы и админы */}
+                {(userRole === 'seller' || userRole === 'admin') && (
+                    <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => navigate(`/products/${product.id}/edit`)}
+                    >
+                        ✏️ Изменить
+                    </button>
+                )}
+
+                {/* Удалять может ТОЛЬКО администратор */}
+                {userRole === 'admin' && (
+                    <button
+                        className="btn btn-danger btn-sm"
+                        onClick={handleDelete}
+                        disabled={deleting}
+                    >
+                        🗑 Удалить
+                    </button>
+                )}
             </div>
             <div className="product-id">ID: {product.id}</div>
         </div>

@@ -5,7 +5,7 @@ import { useAuth } from '../store/AuthContext';
 export default function RegisterPage({ addToast }) {
     const navigate = useNavigate();
     const { register } = useAuth();
-    const [form, setForm] = useState({ email: '', first_name: '', last_name: '', password: '' });
+    const [form, setForm] = useState({ email: '', first_name: '', last_name: '', password: '', role: 'user' });
     const [loading, setLoading] = useState(false);
 
     const handleChange = (f) => (e) => setForm((p) => ({ ...p, [f]: e.target.value }));
@@ -18,7 +18,7 @@ export default function RegisterPage({ addToast }) {
         }
         setLoading(true);
         try {
-            await register(form.email, form.first_name, form.last_name, form.password);
+            await register(form.email, form.first_name, form.last_name, form.password, form.role);
             addToast('Регистрация прошла успешно! Войдите в систему.', 'success');
             navigate('/login');
         } catch (err) {
@@ -55,6 +55,14 @@ export default function RegisterPage({ addToast }) {
                         <label className="form-label">Пароль (мин. 4 символа)</label>
                         <input className="form-input" type="password" placeholder="••••••••"
                             value={form.password} onChange={handleChange('password')} required />
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Роль (тестовая опция)</label>
+                        <select className="form-input" value={form.role} onChange={handleChange('role')} required>
+                            <option value="user">Пользователь</option>
+                            <option value="seller">Продавец</option>
+                            <option value="admin">Администратор</option>
+                        </select>
                     </div>
                     <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                         {loading ? 'Создание...' : 'Зарегистрироваться →'}

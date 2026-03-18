@@ -5,11 +5,13 @@ import { useAuth } from '../store/AuthContext';
 import ProductCard from '../components/ProductCard';
 
 export default function ProductsPage({ addToast }) {
-    const { refreshTokens } = useAuth();
+    const { user, refreshTokens } = useAuth();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [refreshing, setRefreshing] = useState(false);
+
+    const userRole = user?.role || 'user';
 
     const loadProducts = async () => {
         try {
@@ -52,6 +54,9 @@ export default function ProductsPage({ addToast }) {
                 <div className="page-header">
                     <h1>Товары</h1>
                     <p>Управление каталогом товаров</p>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                        Ваша роль: <strong style={{ color: 'var(--accent)' }}>{userRole}</strong>
+                    </div>
                 </div>
 
                 {/* Refresh tokens panel */}
@@ -70,9 +75,12 @@ export default function ProductsPage({ addToast }) {
                         <h2 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Каталог</h2>
                         <div className="products-count">{filtered.length} товаров</div>
                     </div>
-                    <Link to="/products/new" className="btn btn-primary">
-                        + Добавить товар
-                    </Link>
+                    {/* Кнопку "Добавить" видят только продавец и администратор */}
+                    {(userRole === 'seller' || userRole === 'admin') && (
+                        <Link to="/products/new" className="btn btn-primary">
+                            + Добавить товар
+                        </Link>
+                    )}
                 </div>
 
                 <div className="filter-row">
@@ -95,7 +103,7 @@ export default function ProductsPage({ addToast }) {
                 ) : (
                     <div className="products-grid">
                         {filtered.map((p) => (
-                            <ProductCard key={p.id} product={p} onDelete={handleDelete} toast={addToast} />
+                            <ProductCard key={p.id} product={p} onDelete={handleDelete} toast={addToast} userRole={userRole} />
                         ))}
                     </div>
                 )}

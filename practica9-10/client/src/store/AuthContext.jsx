@@ -11,7 +11,10 @@ export function AuthProvider({ children }) {
         const token = localStorage.getItem('accessToken');
         if (token) {
             api.get('/auth/me')
-                .then(({ data }) => setUser(data))
+                .then(({ data }) => {
+                    setUser(data);
+                    localStorage.setItem('userRole', data.role || 'user');
+                })
                 .catch(() => {
                     localStorage.clear();
                     setUser(null);
@@ -26,12 +29,13 @@ export function AuthProvider({ children }) {
         const { data } = await api.post('/auth/login', { email, password });
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('userRole', data.user.role || 'user');
         setUser(data.user);
         return data.user;
     };
 
-    const register = async (email, first_name, last_name, password) => {
-        const { data } = await api.post('/auth/register', { email, first_name, last_name, password });
+    const register = async (email, first_name, last_name, password, role = 'user') => {
+        const { data } = await api.post('/auth/register', { email, first_name, last_name, password, role });
         return data;
     };
 

@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = 4000;
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 // Serve React build in production
 const clientDist = path.join(__dirname, 'client', 'dist');
@@ -44,12 +46,18 @@ app.get('/api', (req, res) => {
                 refresh: 'POST /api/auth/refresh',
                 me: 'GET /api/auth/me'
             },
+            users: {
+                getAll: 'GET /api/users (admin)',
+                getById: 'GET /api/users/:id (admin)',
+                update: 'PUT /api/users/:id (admin)',
+                block: 'DELETE /api/users/:id (admin)'
+            },
             products: {
-                create: 'POST /api/products',
-                getAll: 'GET /api/products',
-                getById: 'GET /api/products/:id',
-                update: 'PUT /api/products/:id',
-                delete: 'DELETE /api/products/:id'
+                create: 'POST /api/products (seller, admin)',
+                getAll: 'GET /api/products (user, seller, admin)',
+                getById: 'GET /api/products/:id (user, seller, admin)',
+                update: 'PUT /api/products/:id (seller, admin)',
+                delete: 'DELETE /api/products/:id (admin)'
             }
         }
     });
