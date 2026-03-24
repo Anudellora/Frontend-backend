@@ -1,0 +1,212 @@
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --warning-bg: #fef08a;
+    --warning-text: #854d0e;
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+}
+
+.app-container {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.offline-indicator {
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: var(--transition);
+    transform: translateY(0);
+}
+
+.offline-indicator.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+main {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.todo-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+#todo-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+#todo-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.btn-add {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0 1.25rem;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-add:hover {
+    background-color: var(--primary-hover);
+}
+
+.todo-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.todo-item:hover {
+    border-color: #d1d5db;
+    background-color: #f3f4f6;
+}
+
+.todo-text {
+    word-break: break-word;
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.btn-delete {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-delete:hover {
+    color: var(--danger-color);
+    background-color: #fee2e2;
+}
+
+.btn-install {
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-install:hover {
+    background-color: var(--bg-color);
+}
+
+.btn-install.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    .todo-form {
+        flex-direction: column;
+    }
+    
+    .btn-add {
+        padding: 0.75rem;
+    }
+
+    .btn-install {
+        position: static;
+        transform: none;
+        margin-top: 1rem;
+        display: inline-block;
+        width: auto;
+    }
+}

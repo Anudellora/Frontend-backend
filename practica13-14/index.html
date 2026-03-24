@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA To-Do List</title>
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Theme & iOS meta tags -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="To-Do">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Мои задачи</h1>
+            <button id="btn-install" class="btn-install hidden" aria-label="Установить приложение">Установить</button>
+            <div id="offline-indicator" class="offline-indicator hidden">
+                <span class="icon">⚠️</span> Офлайн режим
+            </div>
+        </header>
+
+        <main>
+            <form id="todo-form" class="todo-form">
+                <input type="text" id="todo-input" placeholder="Что нужно сделать?" required autocomplete="off">
+                <button type="submit" class="btn-add">Добавить</button>
+            </form>
+
+            <ul id="todo-list" class="todo-list">
+                <!-- Задачи будут добавляться сюда динамически -->
+            </ul>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
