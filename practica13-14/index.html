@@ -3,42 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA To-Do List</title>
-    
+    <title>Заметки — PWA App Shell</title>
+    <meta name="description" content="PWA приложение для заметок с архитектурой App Shell, работает офлайн">
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- Theme & iOS meta tags -->
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="To-Do">
+    <meta name="apple-mobile-web-app-title" content="Заметки">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
-    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./style.css?v=latest">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Мои задачи</h1>
-            <button id="btn-install" class="btn-install hidden" aria-label="Установить приложение">Установить</button>
-            <div id="offline-indicator" class="offline-indicator hidden">
-                <span class="icon">⚠️</span> Офлайн режим
+    <!-- ===== APP SHELL (статическая оболочка, кэшируется при установке) ===== -->
+    <div id="app-shell" class="app-shell">
+
+        <!-- Боковая навигация -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">📝</span>
+                    <span class="logo-text">Заметки</span>
+                </div>
             </div>
-        </header>
-
-        <main>
-            <form id="todo-form" class="todo-form">
-                <input type="text" id="todo-input" placeholder="Что нужно сделать?" required autocomplete="off">
-                <button type="submit" class="btn-add">Добавить</button>
-            </form>
-
-            <ul id="todo-list" class="todo-list">
-                <!-- Задачи будут добавляться сюда динамически -->
+            <ul class="nav-links">
+                <li>
+                    <a href="#notes" class="nav-link active" data-page="notes" id="nav-notes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        <span>Заметки</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#about" class="nav-link" data-page="about" id="nav-about">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                        <span>О нас</span>
+                    </a>
+                </li>
             </ul>
-        </main>
+            <div class="sidebar-footer">
+                <button id="btn-install" class="btn-install hidden">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Установить</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Основная область -->
+        <div class="main-area">
+            <!-- Верхняя панель -->
+            <header class="top-bar">
+                <button id="menu-toggle" class="menu-toggle" aria-label="Меню">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <h1 id="page-title" class="page-title">Заметки</h1>
+                <div id="offline-indicator" class="offline-badge hidden">
+                    <span class="pulse-dot"></span>
+                    Офлайн
+                </div>
+            </header>
+
+            <!-- Динамический контент (загружается по стратегии Network First) -->
+            <main id="content" class="content">
+                <!-- Содержимое страниц загружается динамически -->
+            </main>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Overlay для мобильного меню -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Socket.IO клиент -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./app.js?v=latest"></script>
 </body>
 </html>
