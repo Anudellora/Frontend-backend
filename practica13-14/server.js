@@ -10,6 +10,7 @@
  */
 
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
@@ -239,12 +240,16 @@ app.get('/reminders-status', (req, res) => {
 });
 
 // ==========================================
-// HTTPS + SOCKET.IO
+// HTTP / HTTPS + SOCKET.IO
 // ==========================================
-const server = https.createServer(sslOptions, app);
-const io = new Server(server, {
+const httpsServer = https.createServer(sslOptions, app);
+const httpServer = http.createServer(app);
+
+const io = new Server({
     cors: { origin: '*' }
 });
+io.attach(httpsServer);
+io.attach(httpServer);
 
 // ==========================================
 // SOCKET.IO — ОБРАБОТКА СОБЫТИЙ
@@ -303,7 +308,7 @@ io.on('connection', (socket) => {
 // ==========================================
 // ЗАПУСК СЕРВЕРА
 // ==========================================
-server.listen(PORT, () => {
+httpsServer.listen(PORT, () => {
     console.log('');
     console.log('🔒 HTTPS-сервер запущен!');
     console.log(`   https://localhost:${PORT}`);
@@ -314,5 +319,13 @@ server.listen(PORT, () => {
     console.log('');
     console.log('⚠️  Браузер покажет предупреждение о самоподписанном сертификате.');
     console.log('   Нажмите "Дополнительно" → "Перейти на сайт" для продолжения.');
+    console.log('   (Внимание: Chrome блокирует Push API при использовании недоверенного сертификата!)');
+});
+
+httpServer.listen(3000, () => {
+    console.log('');
+    console.log('🔓 HTTP-сервер также запущен!');
+    console.log('   👉 http://localhost:3000');
+    console.log('   Откройте эту ссылку в Chrome, чтобы Push-уведомления работали без ошибок сертификата.');
     console.log('');
 });
