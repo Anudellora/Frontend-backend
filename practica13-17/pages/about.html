@@ -1,0 +1,67 @@
+<!-- Динамическая страница: О нас -->
+<section class="page-about">
+    <div class="about-hero">
+        <div class="about-icon-wrapper">
+            <span class="about-icon">📝</span>
+        </div>
+        <h2>Заметки — PWA Приложение</h2>
+        <p class="about-version">Версия 2.0 • App Shell Architecture</p>
+    </div>
+
+    <div class="about-cards">
+        <div class="about-card">
+            <div class="about-card-icon">🏗️</div>
+            <h3>App Shell Architecture</h3>
+            <p>Приложение построено по архитектуре App Shell. Статическая оболочка (навигация, шапка, стили) кэшируется при первой загрузке. Динамический контент страниц загружается по стратегии <strong>Network First</strong>.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">📴</div>
+            <h3>Офлайн режим</h3>
+            <p>Все статические ресурсы (HTML-оболочка, CSS, JS, иконки) кэшируются при установке Service Worker. Динамические страницы сначала запрашиваются из сети, а при отсутствии соединения — обслуживаются из кэша.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">🔒</div>
+            <h3>HTTPS</h3>
+            <p>Приложение работает по протоколу HTTPS с использованием самоподписанного сертификата. Это необходимо для корректной работы Service Worker и обеспечения безопасности данных.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">💾</div>
+            <h3>Локальное хранилище</h3>
+            <p>Заметки хранятся в <code>localStorage</code> браузера. Это позволяет сохранять данные между сессиями без серверной части. При офлайн-режиме все данные остаются доступными.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">📱</div>
+            <h3>PWA (Progressive Web App)</h3>
+            <p>Приложение можно установить на рабочий стол устройства. Оно работает как нативное приложение благодаря Web App Manifest и Service Worker.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-card-icon">⚡</div>
+            <h3>Стратегии кэширования</h3>
+            <p><strong>Cache First</strong> — для статических ресурсов App Shell (мгновенная загрузка).<br>
+               <strong>Network First</strong> — для динамических страниц (актуальные данные, с фоллбэком на кэш).</p>
+        </div>
+    </div>
+
+    <div class="about-tech">
+        <h3>Технологии</h3>
+        <div class="tech-tags">
+            <span class="tech-tag">HTML5</span>
+            <span class="tech-tag">CSS3</span>
+            <span class="tech-tag">JavaScript ES6+</span>
+            <span class="tech-tag">Service Worker API</span>
+            <span class="tech-tag">Cache API</span>
+            <span class="tech-tag">Web App Manifest</span>
+            <span class="tech-tag">localStorage</span>
+            <span class="tech-tag">HTTPS (TLS)</span>
+        </div>
+    </div>
+
+    <footer class="about-footer">
+        <p>Практическая работа 13–14 • Фронтенд-разработка • 2026</p>
+    </footer>
+</section>
