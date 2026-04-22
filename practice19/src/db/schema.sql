@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name  VARCHAR(100) NOT NULL,
+    age        INTEGER NOT NULL CHECK (age >= 0 AND age <= 150),
+    created_at BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT,
+    updated_at BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())::BIGINT
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_last_name ON users(last_name);
