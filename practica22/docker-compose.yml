@@ -1,0 +1,51 @@
+services:
+  backend1:
+    build: .
+    environment:
+      - PORT=3000
+    networks:
+      - app-net
+
+  backend2:
+    build: .
+    environment:
+      - PORT=3000
+    networks:
+      - app-net
+
+  backend3:
+    build: .
+    environment:
+      - PORT=3000
+    networks:
+      - app-net
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.docker.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - app-net
+
+  haproxy:
+    image: haproxy:3.0-alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - ./haproxy/haproxy.docker.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

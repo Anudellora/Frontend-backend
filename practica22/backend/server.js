@@ -1,4 +1,5 @@
 const express = require("express");
+const os = require("os");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,6 +11,7 @@ app.get("/", (req, res) => {
   res.json({
     message: "Response from backend server",
     port: PORT,
+    hostname: os.hostname(),
     requestCount,
     timestamp: new Date().toISOString(),
   });
