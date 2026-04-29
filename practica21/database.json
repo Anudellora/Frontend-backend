@@ -1,0 +1,90 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "demo@test.com",
+      "first_name": "Demo",
+      "last_name": "User",
+      "password": "$2a$10$zbzaCpXy08CkCM2rXCiGC.rCQJvrLSpmffHfW3LgDrgWKgxFRV606",
+      "role": "admin",
+      "blocked": false
+    },
+    {
+      "id": 2,
+      "email": "new@test.com",
+      "first_name": "Ivan",
+      "last_name": "Petrov",
+      "password": "$2a$10$ySuDZnPrjWXUYxDY8jxxnOPdxb/hE3qIAmuaG7AGzIg8tx8Z2VZQ.",
+      "role": "seller",
+      "blocked": false
+    },
+    {
+      "id": 3,
+      "email": "kekolov10@mail.ru",
+      "first_name": "Anton",
+      "last_name": "Savelyev",
+      "password": "$2a$10$OGyDO6v1LiS5ADnwZWNoc.XheIAS6wrU7EtzRgpwGExbAjX.7hAre",
+      "role": "user",
+      "blocked": false
+    },
+    {
+      "id": 4,
+      "email": "user@example",
+      "first_name": "Fey",
+      "last_name": "Fat",
+      "password": "$2a$10$pX940deDfUIr0bNnlmHpvegbFLAZDVgJQiYK.JGgaLqZ1K8EBYIkC",
+      "role": "user",
+      "blocked": false
+    },
+    {
+      "id": 5,
+      "email": "user@example.com",
+      "first_name": "Иван",
+      "last_name": "Иванов",
+      "password": "$2a$10$7jwLSy/C6OZ5AHRrmpGgzOOwkwNUHT78EDqhO7XAVQZz4iuOEdPxW",
+      "role": "admin",
+      "blocked": false
+    },
+    {
+      "id": 6,
+      "email": "user1@example.com",
+      "first_name": "ааа",
+      "last_name": "ааа",
+      "password": "$2a$10$GiXZMZdc5KTsELXUwgPngegez62ZYm1atb5AoOMgYPAcNhUHbZ9Bm",
+      "role": "user",
+      "blocked": false
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "title": "Ноутбук ASUS VivoBook",
+      "category": "Электроника",
+      "description": "Мощный ноутбук для работы и учёбы, 16 ГБ ОЗУ, SSD 512 ГБ",
+      "price": 54990
+    },
+    {
+      "id": 2,
+      "title": "Смартфон Samsung Galaxy",
+      "category": "Электроника",
+      "description": "Флагманский смартфон с камерой 108 МП и AMOLED экраном",
+      "price": 39990
+    },
+    {
+      "id": 3,
+      "title": "Кроссовки Nike Air Max",
+      "category": "Одежда",
+      "description": "Стильные кроссовки для повседневной носки, размеры 40-45",
+      "price": 8990
+    },
+    {
+      "id": 4,
+      "title": "Новый товар",
+      "category": "Техника",
+      "description": "Описание товара",
+      "price": 9999
+    }
+  ],
+  "nextUserId": 7,
+  "nextProductId": 5
+}
