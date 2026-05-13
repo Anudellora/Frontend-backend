@@ -31,6 +31,7 @@ frontend-second/
 ├── practica22/         # №22 — Балансировка нагрузки (Nginx + HAProxy)
 │                       # №23 — Контейнеризация (Docker + Docker Compose)
 ├── practica25-27/      # №25 — React + Vite: оптимизация бандла
+│   └── graphql-server/ # №26 — GraphQL API (Apollo Server)
 ├── package.json
 └── README.md
 ```
@@ -539,6 +540,77 @@ npm run preview          # предпросмотр production-сборки
 
 ---
 
+## Практическая работа №26 — GraphQL API (Apollo Server)
+
+**Директория:** `practica25-27/graphql-server/`
+
+### Описание
+GraphQL API для управления каталогом книг на базе **Apollo Server v5**. Реализована связь «один-ко-многим»: у одного автора много книг. Данные хранятся в памяти.
+
+### Схема GraphQL
+
+```graphql
+type Author {
+  id: ID!
+  name: String!
+  bio: String
+  books: [Book!]!        # вложенный резолвер
+}
+
+type Book {
+  id: ID!
+  title: String!
+  year: Int!
+  genre: String
+  author: Author!        # вложенный резолвер
+}
+
+type Query {
+  books: [Book!]!
+  book(id: ID!): Book
+  authors: [Author!]!
+  author(id: ID!): Author
+}
+
+type Mutation {
+  createAuthor(name: String!, bio: String): Author!
+  createBook(title: String!, year: Int!, genre: String, authorId: ID!): Book!
+  deleteBook(id: ID!): Boolean!
+}
+```
+
+### Примеры запросов (для Apollo Sandbox)
+
+```graphql
+# 1. Все книги с автором
+{ books { id title year genre author { name } } }
+
+# 2. Все авторы с книгами (вложенный резолвер Author.books)
+{ authors { id name bio books { title year } } }
+
+# 3. Одна книга по id
+{ book(id: "6") { title year author { name bio } } }
+
+# 4. Mutation: создать автора
+mutation { createAuthor(name: "Пушкин", bio: "...") { id name } }
+
+# 5. Mutation: создать книгу
+mutation { createBook(title: "Евгений Онегин", year: 1833, genre: "Роман в стихах", authorId: "4") { id title author { name } } }
+```
+
+### Стек технологий
+Node.js (ESM), Apollo Server v5, GraphQL 16
+
+### Запуск
+```bash
+cd practica25-27/graphql-server
+npm install
+npm run dev        # порт 4000, node --watch
+# Apollo Sandbox: http://localhost:4000/
+```
+
+---
+
 ## Общий стек технологий
 
 | Технология | Где используется |
@@ -565,6 +637,7 @@ npm run preview          # предпросмотр production-сборки
 | Docker / Docker Compose | Практическая 23 |
 | rollup-plugin-visualizer | Практическая 25 |
 | vite-plugin-compression (brotli) | Практическая 25 |
+| GraphQL / Apollo Server v5       | Практическая 26 |
 | Service Worker / PWA | Практические 13—17 |
 | Socket.IO | Практические 13—17 |
 | Web Push (VAPID) | Практические 13—17 |
