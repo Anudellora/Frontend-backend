@@ -30,6 +30,7 @@ frontend-second/
 ├── practica21/         # №21 — REST API с Redis-кэшированием
 ├── practica22/         # №22 — Балансировка нагрузки (Nginx + HAProxy)
 │                       # №23 — Контейнеризация (Docker + Docker Compose)
+├── practica25-27/      # №25 — React + Vite: оптимизация бандла
 ├── package.json
 └── README.md
 ```
@@ -498,6 +499,46 @@ for i in {1..6}; do curl -s http://localhost:8080/; echo; done
 
 ---
 
+## Практическая работа №25 — Оптимизация бандла React-приложения (Vite)
+
+**Директория:** `practica25-27/`
+
+### Описание
+React SPA с настроенным Vite, lazy loading маршрутов, code splitting и Brotli-сжатием production-сборки. Аналог Webpack-конфига с `contenthash` и `compression-webpack-plugin`.
+
+### Что было сделано
+- React 18 + React Router 6 на **Vite 6**
+- **Три маршрута:** `/` (Главная), `/about` (О нас), `/dashboard`
+- **Lazy Loading** через `React.lazy()` + `Suspense` для About, Dashboard и LazyChart
+- **Code Splitting:** отдельные чанки `vendor`, `router`, `About`, `Dashboard`, `LazyChart`
+- **Content Hash** в именах файлов: `[name].[hash:8].js` (аналог `[contenthash:8]` Webpack)
+- **Brotli-сжатие** через `vite-plugin-compression` (порог 10 КБ, аналог `compression-webpack-plugin`)
+- **Анализатор бандла** `rollup-plugin-visualizer` — генерирует `dist/stats.html` при `ANALYZE=true`
+
+### Результат сборки (`npm run build`)
+| Файл | Размер | gzip |
+|------|--------|------|
+| `index.js` | 5.86 КБ | 2.88 КБ |
+| `router.chunk.js` | 164.68 КБ | 53.88 КБ → **46 КБ** brotli |
+| `About.chunk.js` | 2.11 КБ | 0.96 КБ |
+| `Dashboard.chunk.js` | 1.96 КБ | 0.97 КБ |
+| `LazyChart.chunk.js` | 1.05 КБ | 0.64 КБ |
+
+### Стек технологий
+React 18, React Router 6, Vite 6, rollup-plugin-visualizer, vite-plugin-compression (brotli)
+
+### Запуск
+```bash
+cd practica25-27
+npm install
+npm run dev              # dev-сервер: http://localhost:5173
+npm run build            # production-сборка
+ANALYZE=true npm run build   # сборка + dist/stats.html (анализатор бандла)
+npm run preview          # предпросмотр production-сборки
+```
+
+---
+
 ## Общий стек технологий
 
 | Технология | Где используется |
@@ -522,6 +563,8 @@ for i in {1..6}; do curl -s http://localhost:8080/; echo; done
 | Nginx | Практические 22, 23 |
 | HAProxy | Практические 22, 23 |
 | Docker / Docker Compose | Практическая 23 |
+| rollup-plugin-visualizer | Практическая 25 |
+| vite-plugin-compression (brotli) | Практическая 25 |
 | Service Worker / PWA | Практические 13—17 |
 | Socket.IO | Практические 13—17 |
 | Web Push (VAPID) | Практические 13—17 |
